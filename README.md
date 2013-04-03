@@ -1,6 +1,5 @@
-Clarification of a proof of completeness in classes of approximable
-optimization problems
-===================================================================
+Clarification of a proof of completeness in approximation classes
+=================================================================
 
 This work presents a more precise proof of a theorem that provides sufficient
 conditions for an optimization problem to be hard for a class of approximable
