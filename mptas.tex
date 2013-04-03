@@ -14,13 +14,27 @@
 \declaretheorem[numberlike=theorem]{lemma}
 \declaretheorem[numberlike=theorem]{corollary}
 \declaretheorem[numberlike=theorem, style=definition]{definition}
+\declaretheorem[numberlike=theorem, style=definition]{todo}
 
+%% http://tex.stackexchange.com/a/5255
+%\DeclareMathOperator*{\argmax}{\arg\!\max}
+\DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\email}[1]{\href{mailto:#1}{\nolinkurl{#1}}}
 \newcommand{\algorithmautorefname}{Algorithm}
 \algrenewcommand\algorithmicrequire{\textbf{Input:}}
 
+\author{Jef{}frey Finkelstein}
+\date{\today}
+\title{Clarification of a proof of completeness in classes of approximable optimization problems}
+
 \begin{document}
+
+\maketitle
+
 \section{Introduction}
+This work presents a more precise proof of a theorem in \cite{ep06} that provides sufficient conditions for an optimization problem to be hard for a class of approximable optimization problems under a certain type of reduction.
+For consistency, we use definitions and notation that match and extend the definitions from that work.
 
 \section{Definitions}
 We denote the real numbers by $\mathbb{R}$ and the positive real numbers by $\mathbb{R}^+$.
@@ -38,19 +52,37 @@ We denote the set of all finite binary strings by $\Sigma^*$.
 \end{definition}
 
 \begin{definition}
-  An optimization problem is...
+  An optimization problem is given by $(I, S, m, t)$, where $I$ is called the \emph{instance set}, $S \subseteq I \times \Sigma^*$ and is called the \emph{solution relation}, $m \colon I \times \Sigma^* \to \mathbb{N}$ and is called the \emph{measure function}, and $t\in\{\max, \min\}$ and is called the \emph{type} of the optimization.
+  \begin{enumerate}
+  \item The set of solutions corresponding to an instance $x \in I$ is denoted $S_P(x)$.
+  \item The \emph{optimal measure} for any $x \in I$ is denoted $m^*(x)$.
+    Observe that for all $x \in I$ and all $y \in \Sigma^*$, if $t = \max$ then $m(x, y) \leq m^*(x)$ and if $t = \min$ then $m(x, y) \geq m^*(x)$.
+  \item The \emph{performance ratio}, $\rho$, of a solution $y$ for $x$ is defined by
+    \begin{equation*}
+      \rho(x, y) =
+      \begin{cases}
+        \frac{m(x, y)}{m^*(x)} & \text{if } t = \max \\
+        \frac{m^*(x)}{m(x, y)} & \text{if } t = \min
+      \end{cases}
+    \end{equation*}
+  \item A function $f \colon I \to \Sigma^*$ is an \emph{$r(n)$-approximator} if $\rho(x, f(x)) \geq \frac{1}{r(|x|)}$, for some function $r \colon \mathbb{N} \to \mathbb{Q}^+$.
+  \end{enumerate}
 \end{definition}
 
 \begin{definition}
-  \NPO is the class of optimization problems $(I, S, m, t)$ such that...
+  The complexity class \NPO{} is the class of all optimization problems $(I, S, m, t)$ such that the following conditions hold.
+  \begin{enumerate}
+  \item The instance set $I$ is decidable by a deterministic polynomial time Turing machine.
+  \item The solution relation $S$ is decidable by a deterministic polynomial time Turing machine and is polynomially bounded (that is, there is a polynomial $p$ such that for all $(x, y) \in S$, we have $|y| \leq p(|x|)$).
+  \item The measure function $m$ is computable by a deterministic polynomial time Turing machine.
+  \end{enumerate}
 \end{definition}
 
 \begin{definition}
-  If $\mathcal{F}$ is a collection of functions, $\mathcal{F}-\APX$ is the subclass of $\NPO$...
-
+  If $\mathcal{F}$ is a collection of functions, $\FAPX$ is the subclass of \NPO{} in which for each optimization problem $P$ there exists a polynomial time computable $r(n)$-approximator for $P$, where $r(n) \in \mathcal{F}$.
 \end{definition}
 
-In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
+In this notation, the class usually identified as \APX{} is written $O(1)\mhyphen\APX$.
 
 \begin{definition}\label{def:downwardclosed}
   A collection of functions $\mathcal{F}$ is \emph{downward closed} if for all functions $g \in \mathcal{F}$, all $c \in \mathbb{R}^+$, and all functions $h$ we have $h(n) \in O(g(n^c))$ implies $h \in \mathcal{F}$.
@@ -61,19 +93,35 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
 \end{definition}
 
 \begin{definition}\label{def:gapintroducing}
-  Suppose $L$ is a decision problem, $P$ is a maximization problem, and $\mathcal{F}$ is a downward closed collection of functions.
-  There is an \emph{enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$} if there are functions there are functions $f \colon \left(\Sigma^* \times \mathbb{Q}^+ \right) \to I$ and $g \colon \left( \Sigma^* \times \Sigma^* \times \mathbb{Q}^+\right) \to Sigma^+$, constants $n_0 \in \mathbb{R}^+$ and $c \in \mathbb{R}^+$, and a function $F \colon \mathbb{Q}^+ \to \mathbb{Q}^+$ that is hard for $\mathcal{F}$ such that for all $x \in \Sigma^+$ with $|x| \geq n_0$ and for all $N \in \mathbb{Q}^+$ such that $N \geq |x|^c$,
+  Suppose $L$ is a decision problem in \NP, $P$ is a maximization problem, and $\mathcal{F}$ is a downward closed collection of functions.
+  There is an \emph{enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$} if there are functions $f \colon \left(\Sigma^* \times \mathbb{Q}^+ \right) \to I$ and $g \colon \left( \Sigma^* \times \Sigma^* \times \mathbb{Q}^+\right) \to \Sigma^+$, constants $n_0 \in \mathbb{R}^+$ and $c \in \mathbb{R}^+$, and a function $F \colon \mathbb{Q}^+ \to \mathbb{Q}^+$ such that
+  \begin{enumerate}
+  \item $F$ is hard for $\mathcal{F}$,
+  \item $F$ is non-decreasing for all sufficiently large $n$,
+  \item $F(n) > 1$ for all sufficiently large $n$,
+  \end{enumerate}
+  and for all $x \in \Sigma^+$ with $|x| \geq n_0$ and for all $N \in \mathbb{Q}^+$ such that $N \geq |x|^c$,
   \begin{enumerate}
   \item if $x \in L$ then $m_P^*(f(x, N)) \geq N$,
-  \item if $x \notin L$ then $m_P^*(f(x, N)) \leq \frac{1}{F(N)} N$, and
+  \item if $x \notin L$ then $m_P^*(f(x, N)) \leq \frac{1}{F(N)} N$,
   \item for all $y \in S_P(f(x, N))$ such that $m_P(x, y) > \frac{1}{F(N)} N$, we have $g(x, y, N)$ is a witness that $x \in L$, and
-  \item $f$ and $g$ are computable in deterministic polynomial time with respec to $x$.
+  \item $f$, $g$, and $F$ are computable in deterministic time polynomial in $|x|$.
   \end{enumerate}
 \end{definition}
 
 \begin{definition}\label{def:canonicallyhard}
   Suppose $\mathcal{F}$ is a downward closed family of functions and suppose $P$ is a maximization problem in $\NPO$, with $P = (I, S, m, \max)$.
-  The optimization problem $P$ is \emph{canonically hard} for $\mathcal{F}-\APX$ if for all decision problems $L \in \NP$ there is an enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$.
+  The optimization problem $P$ is \emph{canonically hard} for $\FAPX$ if for all decision problems $L \in \NP$ there is an enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$.
+\end{definition}
+
+\begin{definition}\label{def:ptasreduction}
+  Suppose $P$ and $Q$ are maximization problems in $\NPO$ with $P = (I_P, S_P, m_P, \max)$ and $Q = (I_Q, S_Q, m_Q, \max)$.
+  There is an \emph{MPTAS reduction} from $P$ to $Q$ if there are functions $f \colon \left(I_P \times \mathbb{Q}^+\right) \to I_Q$, $g \colon \left(I_P \times \Sigma^* \right) \to \Sigma^*$, and $c \colon (0, 1) \to (0, 1)$ such that for all $x \in I_P$ and all $\epsilon \in (0, 1)$,
+  \begin{enumerate}
+  \item for all $y \in S_Q(f(x, \epsilon))$, we have $g(x, y, \epsilon) \in S_P(x)$,
+  \item for all $y \in S_Q(f(x, \epsilon))$, if $\rho_Q(f(x, \epsilon), y) \geq 1 - c(\epsilon)$ then $\rho_P(x, g(x, y, \epsilon)) \geq 1 - \epsilon$, and
+  \item $f$ and $g$ are computable in deterministic polynomial time with respect to $x$.
+  \end{enumerate}
 \end{definition}
 
 \begin{definition}\label{def:mptasreduction}
@@ -82,40 +130,45 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
   \begin{enumerate}
   \item $|f(x, \epsilon)| \leq p(|x|)$,
   \item if $f(x, \epsilon) = (x_1', \dotsc, x_{p(|x|)}')$ then for all $\mathbf{y} \in (S_Q(x_1') \times \dotsb \times S_Q(x_{p(|x|)}'))$, we have $g(x, \mathbf{y}, \epsilon) \in S_P(x)$,
-  \item if $f(x, \epsilon) = (x_1', \dotsc, x_{p(|x|)}')$ then for all $\mathbf{y} \in (S_Q(x_1') \times \dotsb \times S_Q(x_{p(|x|)}'))$ we have $\rho_Q(x_j', y_j) \geq 1 - c(\epsilon)$ implies $\rho_P(x, g(x, \mathbf{y}, \epsilon)) \geq 1 - \epsilon$, where $\mathbf{y} = (y_1, \dotsc, y_{p(|x|)}')$, and
+  \item if $f(x, \epsilon) = (x_1', \dotsc, x_{p(|x|)}')$ then for all $\mathbf{y} \in (S_Q(x_1') \times \dotsb \times S_Q(x_{p(|x|)}'))$ there is a $j \in \{1, \dotsc, p(|x|)\}$ such that $\rho_Q(x_j', y_j) \geq 1 - c(\epsilon)$ implies $\rho_P(x, g(x, \mathbf{y}, \epsilon)) \geq 1 - \epsilon$, where $\mathbf{y} = (y_1, \dotsc, y_{p(|x|)})$, and
   \item $f$ and $g$ are computable in deterministic polynomial time with respect to $x$.
   \end{enumerate}
 \end{definition}
+
+The ``M'' in ``MPTAS'' stands for ``multi-valued'', because $f$ produces a finite sequence of instances instead of a single instance, as in the PTAS reduction.
+
+\begin{lemma}\label{lem:ptasimpliesmptas}
+  Suppose $P$ and $Q$ are two optimization problems.
+  If there is a PTAS reduction from $P$ to $Q$ then there is an MPTAS reduction from $P$ to $Q$.
+\end{lemma}
+\begin{proof}
+  Suppose $(f, g, c)$ is the PTAS reduction from $P$ to $Q$.
+  If we consider the output of $f$ and the second input to $g$ to be sequences of length one, then $(f, g, c)$ are also an MPTAS reduction from $P$ to $Q$.
+\end{proof}
+
+The proof of the next lemma is straightforward but tedious, so it is omitted.
+
+\begin{lemma}\label{lem:composition}
+  MPTAS reductions are closed under composition.
+\end{lemma}
 
 \section{Results}
 
 \begin{lemma}\label{lem:bigo}
   Suppose $f$ and $g$ are two functions with domain $\mathbb{N}$ and codomain $\mathbb{R}$.
-  If $g(n) > 1$ for all $n$, then $f(n)$ is in $O(g(n)$ if and only if $f(n) - 1$ is in $O(g(n) - 1)$.
+  If $g(n) > 1$ for all sufficiently large $n$, then $f(n)$ is in $O(g(n)$ if and only if $f(n) - 1$ is in $O(g(n) - 1)$.
 \end{lemma}
 
-\begin{lemma}
-  MPTAS reductions are closed under composition.
-\end{lemma}
-\begin{proof}
-  In the definitions below, if $s = (s_1, \dotsc, s_n)$ and $t = (t_1, \dotsc, t_m)$, then the concatenation of $s$ and $t$, denoted $s \circ t$, is defined by $s \circ t = (s_1, \dotsc, s_n, t_1, \dotsc, t_m)$.
-
-  Let $A$, $B$, and $C$ be maximization problems and let $(f_1, g_1, c_1)$ and $(f_2, g_2, c_2)$ be the reductions from $A$ to $B$ and from $B$ to $C$, respectively.
-  Define an MPTAS reduction $(f_3, g_3, c_3)$ from $A$ to $C$ as follows.
-  \begin{align*}
-    f_3(x, \epsilon) & = f_2(x'_1, \epsilon) \circ \dotsb \circ f_2(x'_{p_1(|x|)}, \epsilon), & \text{where } f_1(x, \epsilon) = (x'_1, \dotsc, x'_{p_1(|x|)}) \\
-    g_3(x, (y''_1, \dotsc, y''_M), \epsilon) & = g_1(x, (g_2(x'_1, (y'_{1,1}, \dotsc, y'_{1, M_1}), \epsilon), \dotsc, g_2(x'_{p_1(|x|)}, (y'_{p_1(|x|), 1}, \dotsc, y'_{p_1(|x|), M_{p_1(|x|)}}), \epsilon)), \epsilon) & \text{where } f_1(x, \epsilon) = (x'_1, \dotsc, x'_{p_1(|x|)}) \text{ and } ... \\
-    c_3(\epsilon) & = c_2(c_1(\epsilon))
-  \end{align*}
-\end{proof}
-
-\begin{theorem}
-  Suppose $\mathcal{F}$ is a class of downward closed functions and suppose $Q$ is a maximization problem.
-  If $Q$ is canonically hard for $\mathcal{F}-\APX$ then $Q$ is hard for the class of maximization problems in $\mathcal{F}-\APX$ under MPTAS reductions.
+\begin{todo}
+  Where do we use downward closed-ness?
+\end{todo}
+\begin{theorem}\label{thm:hardness}
+  Suppose $\mathcal{F}$ is a class of downward closed functions and $Q$ is a maximization problem.
+  If $Q$ is canonically hard for $\FAPX$ then $Q$ is hard for the class of maximization problems in $\FAPX$ under MPTAS reductions.
 \end{theorem}
 \begin{proof}
-  Let $P$ be a maximization problem in $\mathcal{F}-\APX$, with $P = (I_P, S_P, m_P, \max)$.
-  By the definition of $\mathcal{F}-\APX$, we know the instance set $I_P$ is in \P, the solutions set $S_P$ is in \P{} and is polynomially bounded, the measure function $m_P$ is computable in deterministic polynomial time, and there is an $r(n)$-approximator $A$ for $P$ for some $r \in \mathcal{F}$.
+  Suppose $P$ is a maximization problem in $\FAPX$, where $P$ is defined by $P = (I_P, S_P, m_P, \max)$.
+  By the definition of $\FAPX$, we know the instance set $I_P$ is in \P, the solutions set $S_P$ is in \P{} and is polynomially bounded, the measure function $m_P$ is computable in deterministic polynomial time, and there is an $r(n)$-approximator $A$ for $P$ for some $r \in \mathcal{F}$.
 
   Assume without loss of generality that $m_P(x, y) \geq 1$ for all $x$ and $y$.
   \begin{todo}
@@ -129,18 +182,12 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
   We choose $M$ this way so that $\left(\frac{1}{1 - \epsilon}\right)^M \geq 2^{p(|x|)} \geq m_P^*(x)$ for all $x \in I_P$.
   Since $\epsilon$ is a constant independent of $x$, the value of $M$ is a polynomial in $|x|$.
 
-  Define $L_i = \right\{ x \in I_P \,\middle|\, m_P^*(x) \geq \left(\frac{1}{1 - \epsilon}\right)^{i - 1}\left\}$ for each $i \in \{1, \dotsc, M\}$.
+  Define $L_i = \left\{ x \in I_P \,\middle|\, m_P^*(x) \geq \left(\frac{1}{1 - \epsilon}\right)^{i - 1}\right\}$ for each $i \in \{1, \dotsc, M\}$.
   Each of the languages $L_i$ is in \NPO: the witness is a candidate solution $y$ for $x$ and the verification procedure checks (in polynomial time) that $m_P(x, y) \geq \left(\frac{1}{1 - \epsilon}\right)^{i - 1}$ (using the fact that $m_P^*(x) \geq m_P(x, y)$ for all $y$).
   By hypothesis there is an enhanced $\mathcal{F}$-gap-introducing reduction from $L_i$ to $Q$ for each $i \in \{1, \dotsc, M\}$; let $f_i$, $g_i$, $F_i$, $n_i$, $c_i$ be the functions and constants satisfying the definition of that reduction.
-  For each $i \in \{1, \dotsc, M\}$, since $r \in mathcal{F}$ and $\mathcal{F_i}$ is hard for $\mathcal{F}$, we have $r(n) \in O(F_i(n^{d_i}))$ for some $d_i \in \mathbb{R}^+$.
-  By \autoref{lem:bigo}, $r(n) - 1 \in O(F_i(n^{d_i}) - 1)$.
-  \begin{todo}
-    Explain why this is required.
-  \end{todo}
-  \begin{todo}
-    Add the requirements on $g$ from \autoref{lem:bigo} to the hypothesis of this theorem.
-  \end{todo}
-  More specifically, there is a $k \in \mathbb{Q}^+$ and an $N \in \mathbb{N}$ such that for all $n \in mathbb{N}$ with $n > N$, we have $r(n) - 1 \leq k(F_i(n^{d_i}) - 1)$, or in other words,
+  For each $i \in \{1, \dotsc, M\}$, since $r \in \mathcal{F}$ and $F_i$ is hard for $\mathcal{F}$, we have $r(n) \in O(F_i(n^{d_i}))$ for some $d_i \in \mathbb{R}^+$.
+  In order to facilitate some inequalities in the proof below, we invoke \autoref{lem:bigo} to yield the equivalent statement $r(n) - 1 \in O(F_i(n^{d_i}) - 1)$.
+  More specifically, there is a $k \in \mathbb{Q}^+$ and an $N \in \mathbb{N}$ such that for all $n \in \mathbb{N}$ with $n > N$, we have $r(n) - 1 \leq k(F_i(n^{d_i}) - 1)$, or in other words,
   \begin{equation}\label{eq:0}
     r(n) \leq k(F_i(n^{d_i}) - 1) + 1.
   \end{equation}
@@ -148,11 +195,10 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
   At this point we can construct the MPTAS reduction from $P$ to $Q$.
   Let $f(x, \epsilon) = (f_1(x, N_1), \dotsc, f_M(x, N_M))$ for all $x \in I_P$ and all $\epsilon \in (0, 1)$, where $N_i = |x|^{\max(c_i, d_i)}$ for each $i \in \{1, \dotsc, M\}$.
   Define $g$ as in \autoref{alg:g}.
-  \begin{algorithm}\label{alg:g}
-    %\caption{Deterministic polynomial time algorithm that computes a $r_n$-approximate solution for $x$%
-    %  \label{alg:g}}
+  \begin{algorithm}
+    \caption{Deterministic polynomial time algorithm that computes a $(1 - \epsilon)$-approximate solution for $x$ \label{alg:g}}
     \begin{algorithmic}
-      \Require{$x \in I_P$, $(y_1, \dotsc, y_M) \in (S_Q(f_1(x, N_1)) \times \dotsb \times S_Q(f_M(x, N_M)))$, $\epsilon$}
+      \Require{$x \in I_P$, $(y_1, \dotsc, y_M) \in (S_Q(f_1(x, N_1)) \times \dotsb \times S_Q(f_M(x, N_M)))$, $\epsilon \in (0, 1)$}
       \Statex{}
       \Function{$g$}{$x$, $\mathbf{y}$, $\epsilon$}:
         \For{$i \in \{1, \dotsc, M\}$}
@@ -177,9 +223,6 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
     Explain this more, and check that the ``sufficiently large'' requirement is satisfied.
   \end{todo}
   Condition 4 is satisfied because $f$ is computable in polynomial time as long as each $f_i$ is, and $g$ is computable in polynomial time as long as $A$, $m_Q$, $f_i$, $g_i$, and $F_i$ are (all other operations in $g$ can be performed in polynomial time).
-  \begin{todo}
-    Add the requirement that $F_i$ is computable in polynomial time to the hypothesis of this theorem.
-  \end{todo}
   It remains to verify condition 4, the approximation preservation condition.
 
   Let $x \in I_P$, let $\epsilon \in (0, 1)$, and let $\mathbf{y} \in (S_Q(f_1(x, N_1)) \times \dotsb \times S_Q(f_M(x, N_M)))$, where $\mathbf{y} = (y_1, \dotsc, y_M)$.
@@ -189,27 +232,24 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
   \end{todo}
   Thus $m_P^*(x)$ exists and there must exist a $j \in \{1, \dotsc, M\}$ such that
   \begin{equation}\label{eq:1}
-    (\frac{1}{1 - \epsilon})^{j - 1} \leq m_P^*(x) \leq (\frac{1}{1 - \epsilon})^j.
+    \left(\frac{1}{1 - \epsilon}\right)^{j - 1} \leq m_P^*(x) \leq \left(\frac{1}{1 - \epsilon}\right)^j.
   \end{equation}
   We will show that this $j$ satisfies condition 3.
-  \begin{todo}
-    Check that the quantifier for $\mathbf{y}$ is in the right place.
-  \end{todo}
   Suppose $\rho_Q(f_j(x, N_j), y_j) \geq 1 - c(\epsilon)$.
   If $m_Q(f_j(x, N_j), y_j) > \frac{N_j}{F_j(N_j)}$ then $g(x, \mathbf{y}, \epsilon)$ outputs $g_j(x, y_j, N_j)$.
   By the construction of $g$ and the definition of $g_j$,
   \begin{equation}\label{eq:2}
-    m_P(x, g_j(x, y_j, N_j)) \geq (\frac{1}{1 - \epsilon})^{j - 1}.
+    m_P(x, g_j(x, y_j, N_j)) \geq \left(\frac{1}{1 - \epsilon}\right)^{j - 1}.
   \end{equation}
   Combining \autoref{eq:1} and \autoref{eq:2} we have
-  \begin{equaton*}
-    (\frac{1}{1 - \epsilon})^{j - 1} \leq m_P(x, g_j(x, y_j, N_j)) = m_Q(x, g(x, \mathbf{y}, \epsilon)) \leq m_P^*(x) \leq (\frac{1}{1 - \epsilon})^j,
+  \begin{equation*}
+    \left(\frac{1}{1 - \epsilon}\right)^{j - 1} \leq m_P(x, g_j(x, y_j, N_j)) = m_Q(x, g(x, \mathbf{y}, \epsilon)) \leq m_P^*(x) \leq \left(\frac{1}{1 - \epsilon}\right)^j,
   \end{equation*}
   which implies
   \begin{equation*}
     \rho_P(x, g(x, \mathbf{y}, \epsilon)) = \frac{m_P(x, g(x, \mathbf{y}, \epsilon))}{m_P^*(x)} \geq 1 - \epsilon.
   \end{equation*}
-  This is true even without the premise $\rho_Q(f_j(x, N_j), y_j) \geq 1 - c(\epsilon)$.
+  (This is true even without the premise $\rho_Q(f_j(x, N_j), y_j) \geq 1 - c(\epsilon)$.)
 
   Suppose now that $m_Q(f_j(x, N_j), y_j) \leq \frac{N_j}{F_j(N_j)}$, so $g(x, \mathbf{y}, \epsilon)$ will yield $A(x)$.
   Since
@@ -221,28 +261,46 @@ In this notation, the class usually identified as \APX{} is written $O(1)-\APX$.
   Since $f_j$ is part of a gap-introducing reduction from $L_j$ to $Q$, we have $m_Q^*(f_j(x, N_j)) \geq N_j$.
   Hence
   \begin{equation*}
-    $\rho_Q(f_j(x, N_j), y_j) = \frac{m_Q(f_j(x, N_j), y_j)}{m_Q^*(f_j(x, N_j))} \leq \frac{\frac{N_j}{F_j(N_j)}}{N_j} = \frac{1}{F_j(N_j)}$.
+    \rho_Q(f_j(x, N_j), y_j) = \frac{m_Q(f_j(x, N_j), y_j)}{m_Q^*(f_j(x, N_j))} \leq \frac{\frac{N_j}{F_j(N_j)}}{N_j} = \frac{1}{F_j(N_j)}.
   \end{equation*}
   This implies $\frac{1}{F_j(N_j)} \geq 1 - c(\epsilon)$, or $F_j(N_j) \leq \frac{1}{1 - c(\epsilon)}$.
   By construction, $N_j = |x|^{\max(c_j, d_j)}$, so $N_j \geq |x|^{d_j}$.
-  Since $F_j$ is non-decreasing $F_j(N_j) \geq F_j(|x|^{d_j})$.
-  \begin{todo}
-    Require $F_j$ is non-decreasing (for sufficiently large $n$?).
-  \end{todo}
+  Since $F_j$ is non-decreasing for sufficiently large inputs, $F_j(N_j) \geq F_j(|x|^{d_j})$.
   Thus $F_j(|x|^{d_j}) \leq \frac{1}{1 - c(\epsilon)}$.
-  Combining this with \autoref{eq:0} yields $r(|x|) \leq k(\frac{1}{1 - c(\epsilon)} - 1) + 1$.
-  \begin{todo}
-    For sufficiently large $x$...
-  \end{todo}
+  Combining this with \autoref{eq:0} yields $r(|x|) \leq k\left(\frac{1}{1 - c(\epsilon)} - 1\right) + 1$, for sufficiently long $x$.
   Substituting the definition of $c(\epsilon)$ and performing some algebraic manipulation yields $r(|x|) \leq \frac{1}{1 - \epsilon}$, which is equivalent to $\frac{1}{r(|x|)} \geq 1 - \epsilon$.
-  Therefore $\rho_P(x, g(x, \mathbf{y}, \epsilon)) \geq 1 - \epsilon$, completing the proof that $(f, g, c)$ is a correct MPTAS reduction from an arbitrary language $P$ in $\mathcal{F}-\APX$ to $Q$.
+  Therefore $\rho_P(x, g(x, \mathbf{y}, \epsilon)) \geq 1 - \epsilon$, completing the proof that $(f, g, c)$ is a correct MPTAS reduction from an arbitrary language $P$ in $\FAPX$ to $Q$.
 \end{proof}
+
+In the last steps of the above proof we ignore strings $x$ that were not ``sufficiently long''.
+This is acceptable because a lookup table of finite size can store the optimal solutions to all instances of optimization problem $P$ of length up to $N$, where $N$ is a constant (representing the ``sufficient length'').
 
 \begin{corollary}
   Suppose $\mathcal{F}$ is a class of downward closed functions and suppose $Q$ is an optimization problem.
-  If $Q$ is canonically hard for $\mathcal{F}-\APX$ then $Q$ is hard for $\mathcal{F}-\APX$ under MPTAS reductions.
+  If $Q$ is canonically hard for $\FAPX$ then $Q$ is hard for $\FAPX$ under MPTAS reductions.
 \end{corollary}
 \begin{proof}
+  We already know from \autoref{thm:hardness} that there is an MPTAS reduction from every maximization problem in $\FAPX$ to $Q$.
+  Consider an arbitrary minimization problem $P$ in $\FAPX$.
+  By \cite{ep06}, there is an ``E reduction'' (another type of approximation preserving reduction) from $P$ to $P'$ for some maximization problem $P'$, and an E reduction implies a PTAS reduction (see, for example, \cite[Figure~2]{crescenzi97}).
+  By \autoref{lem:ptasimpliesmptas}, a PTAS reduction implies an MPTAS reduction.
+  By \autoref{lem:composition}, an MPTAS reduction from $P$ to $P'$ and another from $P'$ to $Q$ implies an MPTAS reduction from $P$ to $Q$.
+  Therefore $Q$ is hard for $\FAPX$ under MPTAS reductions.
 \end{proof}
+
+\section*{About this work}
+
+Copyright 2013 Jef{}frey Finkelstein.
+
+This work is licensed under the Creative Commons Attribution-ShareAlike License 3.0.
+Visit \mbox{\url{https://creativecommons.org/licenses/by-sa/3.0/}} to view a copy of this license.
+
+The \LaTeX{} markup which generated this document is available on the World Wide Web at \mbox{\url{https://github.com/jfinkels/mptas}}.
+It is also licensed under the Creative Commons Attribution-ShareAlike License.
+
+The author can be contacted via email at \email{jeffreyf@bu.edu}.
+
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}
