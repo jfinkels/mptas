@@ -3,7 +3,7 @@
 \usepackage{amsthm}
 \usepackage{thmtools}
 % Package `hyperref` must come before package `complexity`.
-\usepackage[pdftitle={Restricted probabilistically checkable proofs}, pdfauthor={Jeffrey Finkelstein}]{hyperref}
+\usepackage[pdftitle={Clarification of a proof of completeness in classes of approximable optimization problems}, pdfauthor={Jeffrey Finkelstein}]{hyperref}
 \usepackage{complexity}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -51,10 +51,15 @@ We denote the set of all finite binary strings by $\Sigma^*$.
   We denote by $O(g(n))$ the set of all functions $f \colon \mathbb{N} \to \mathbb{R}$ such that there exists a $k \in \mathbb{Q}^+$ and an $N \in \mathbb{N}$ such that for all $n \in \mathbb{N}$ we have $n > N$ implies $f(n) \leq k g(n)$.
 \end{definition}
 
+We will use the following lemma to simplify the proof of the main theorem.
+
 \begin{lemma}\label{lem:bigo}
   Suppose $f$ and $g$ are two functions with domain $\mathbb{N}$ and codomain $\mathbb{R}$.
   If $g(n) > 1$ for all sufficiently large $n$, then $f(n)$ is in $O(g(n)$ if and only if $f(n) - 1$ is in $O(g(n) - 1)$.
 \end{lemma}
+
+In this work we wish to determine the approximability of optimization problems.
+Therefore, we require rigorous definitions for both optimization problems and approximations for them.
 
 \begin{definition}
   An optimization problem is given by $(I, S, m, t)$, where $I$ is called the \emph{instance set}, $S \subseteq I \times \Sigma^*$ and is called the \emph{solution relation}, $m \colon I \times \Sigma^* \to \mathbb{N}$ and is called the \emph{measure function}, and $t\in\{\max, \min\}$ and is called the \emph{type} of the optimization.
@@ -74,6 +79,8 @@ We denote the set of all finite binary strings by $\Sigma^*$.
   \end{enumerate}
 \end{definition}
 
+Just as a focus of computational complexity for decision problems is on the relationship between \P{} and \NP{}, so too do we study the relationship between optimization problems in \NP{}.
+
 \begin{definition}
   The complexity class \NPO{} is the class of all optimization problems $(I, S, m, t)$ such that the following conditions hold.
   \begin{enumerate}
@@ -83,11 +90,15 @@ We denote the set of all finite binary strings by $\Sigma^*$.
   \end{enumerate}
 \end{definition}
 
+Some optimization problems in \NPO{} are approximable within some ratio, so we wish to classify those problems as well.
+
 \begin{definition}
   If $\mathcal{F}$ is a collection of functions, $\FAPX$ is the subclass of \NPO{} in which for each optimization problem $P$ there exists a polynomial time computable $r(n)$-approximator for $P$, where $r(n) \in \mathcal{F}$.
 \end{definition}
 
 In this notation, the class usually identified as \APX{} is written $O(1)\mhyphen\APX$.
+
+The following definitions are required for producing complete problems for $\FAPX$.
 
 \begin{definition}\label{def:downwardclosed}
   A collection of functions $\mathcal{F}$ is \emph{downward closed} if for all functions $g \in \mathcal{F}$, all $c \in \mathbb{R}^+$, and all functions $h$ we have $h(n) \in O(g(n^c))$ implies $h \in \mathcal{F}$.
@@ -96,10 +107,6 @@ In this notation, the class usually identified as \APX{} is written $O(1)\mhyphe
 \begin{definition}\label{def:hardfunction}
   A function $g$ is \emph{hard} for the collection of functions $\mathcal{F}$ if for all $h \in \mathcal{F}$ there is a $c \in \mathbb{R}^+$ such that $h(n) \in O(g(n^c))$.
 \end{definition}
-
-\begin{todo}
-  Modify definition to allow for minimization problems.
-\end{todo}
 
 \begin{definition}\label{def:gapintroducing}
   Suppose $L$ is a decision problem in \NP, $P$ is a maximization problem, and $\mathcal{F}$ is a downward closed collection of functions.
@@ -118,10 +125,15 @@ In this notation, the class usually identified as \APX{} is written $O(1)\mhyphe
   \end{enumerate}
 \end{definition}
 
+The above definition can be modified to allow $P$ to be a minimization problem by swapping the direction of the inequalities and using $F(N) \cdot N$ instead of $\frac{1}{F(N)} N$.
+
 \begin{definition}\label{def:canonicallyhard}
   Suppose $\mathcal{F}$ is a downward closed family of functions and suppose $P$ is a maximization problem in $\NPO$, with $P = (I, S, m, \max)$.
-  The optimization problem $P$ is \emph{canonically hard} for $\FAPX$ if for all decision problems $L \in \NP$ there is an enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$.
+  The maximization problem $P$ is \emph{canonically hard} for $\FAPX$ if for all decision problems $L \in \NP$ there is an enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$.
 \end{definition}
+
+One of the main tools for studying the structural complexity of class of approximable optimization problems is the approximation preserving reduction.
+One such reduction is the PTAS reduction.
 
 \begin{definition}\label{def:ptasreduction}
   Suppose $P$ and $Q$ are maximization problems in $\NPO$ with $P = (I_P, S_P, m_P, \max)$ and $Q = (I_Q, S_Q, m_Q, \max)$.
@@ -132,6 +144,9 @@ In this notation, the class usually identified as \APX{} is written $O(1)\mhyphe
   \item $f$ and $g$ are computable in deterministic time polynomial in $|x|$.
   \end{enumerate}
 \end{definition}
+
+The PTAS reduction has been succesful in proving completeness in certain classes of approximable optimization problems.
+In \cite{ep06}, the authors introduce the following relaxation of the PTAS reduction in order to allow more general completeness results.
 
 \begin{definition}\label{def:mptasreduction}
   Suppose $P$ and $Q$ are maximization problems in $\NPO$ with $P = (I_P, S_P, m_P, \max)$ and $Q = (I_Q, S_Q, m_Q, \max)$.
@@ -163,10 +178,7 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
 
 \section{Results}
 
-\begin{todo}
-  Where do we use downward closed-ness?
-\end{todo}
-\begin{theorem}\label{thm:hardness}
+\begin{theorem}[{\cite[Theorem~2]{ep06}}]\label{thm:hardness}
   Suppose $\mathcal{F}$ is a class of downward closed functions and $Q$ is a maximization problem.
   If $Q$ is canonically hard for $\FAPX$ then $Q$ is hard for the class of maximization problems in $\FAPX$ under MPTAS reductions.
 \end{theorem}
@@ -174,10 +186,7 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
   Suppose $P$ is a maximization problem in $\FAPX$, where $P$ is defined by $P = (I_P, S_P, m_P, \max)$.
   By the definition of $\FAPX$, we know the instance set $I_P$ is in \P, the solutions set $S_P$ is in \P{} and is polynomially bounded, the measure function $m_P$ is computable in deterministic polynomial time, and there is an $r(n)$-approximator $A$ for $P$ for some $r \in \mathcal{F}$.
 
-  Assume without loss of generality that $m_P(x, y) \geq 1$ for all $x$ and $y$.
-  \begin{todo}
-    Why can we assume this?
-  \end{todo}
+  Assume without loss of generality that $m_P(x, y) \geq 1$ for all $x$ and $y$ (if $m_P(x, y) < 1$ for some $x$ and $y$, just consider a new maximization problem whose measure function is $m'_P(x, y) = m_P(x, y) + 1$; the approximation results will be the same).
   Since $m_P$ is computable in deterministic polynomial time, the \emph{length} of its output is bounded by a polynomial $p$ with respect to the length of its first input, $x$, so the \emph{value} of $m_P(x, y)$ is in the interval $[1, 2^{p(|x|)}]$.
   Our goal is to construct functions $f$, $g$, and $c$ satisfying the conditions of the MPTAS reduction.
   We do this by partitioning the interval $[1, 2^{p(|x|)}]$ into subintervals, each of ``multiplicative size'' $\frac{1}{1 - \epsilon}$, in order to find a solution that is within a $\frac{1}{1 - \epsilon}$ multiplicative factor of the optimal solution, then using the enhanced $\mathcal{F}$-gap-introducing reduction to reconstruct a candidate solution.
@@ -227,13 +236,10 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
   For sufficiently long $x$, the value of $g_i(x, y_i, N_i)$ is a witness that $x \in L_i$, or equivalently, a solution in $S_P(x)$.
   The value of $N_i$ is at least $|x|^c_i$, so $N_i$ is large enough that $g_i$ can reconstruct a witness.
   Condition 4 is satisfied because $f$ is computable in polynomial time as long as each $f_i$ is, and $g$ is computable in polynomial time as long as $A$, $m_Q$, $f_i$, $g_i$, and $F_i$ are (all other operations in $g$ can be performed in polynomial time).
-  It remains to verify condition 4, the approximation preservation condition.
+  It remains to verify condition 3, the approximation preservation condition.
 
   Let $x \in I_P$, let $\epsilon \in (0, 1)$, and let $\mathbf{y} \in (S_Q(f_1(x, N_1)) \times \dotsb \times S_Q(f_M(x, N_M)))$, where $\mathbf{y} = (y_1, \dotsc, y_M)$.
-  Assume without loss of generality that $x$ has a solution in $P$.
-  \begin{todo}
-    How?
-  \end{todo}
+  Assume without loss of generality that $x$ has a solution in $P$ (if $x$ had no solution in $P$, an approximation preserving reduction is meaningless anyway).
   Thus $m_P^*(x)$ exists and there must exist a $j \in \{1, \dotsc, M\}$ such that
   \begin{equation}\label{eq:1}
     \left(\frac{1}{1 - \epsilon}\right)^{j - 1} \leq m_P^*(x) \leq \left(\frac{1}{1 - \epsilon}\right)^j.
@@ -280,7 +286,7 @@ In some steps of the above proof we ignore strings $x$ that were not ``sufficien
 This is acceptable because a lookup table of finite size can store the optimal solutions to all instances of optimization problem $P$ of length up to $n_0$, where $n_0$ is a constant (representing the ``sufficient length'').
 The function $g$ could then look up and output the optimal solution for all inputs $x$ of length up to $n_0$.
 
-\begin{corollary}
+\begin{corollary}[{\cite[Theorem~3]{ep06}}]
   Suppose $\mathcal{F}$ is a class of downward closed functions and suppose $Q$ is an optimization problem.
   If $Q$ is canonically hard for $\FAPX$ then $Q$ is hard for $\FAPX$ under MPTAS reductions.
 \end{corollary}
