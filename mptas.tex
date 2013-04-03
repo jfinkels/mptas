@@ -16,6 +16,8 @@
 \declaretheorem[numberlike=theorem, style=definition]{definition}
 \declaretheorem[numberlike=theorem, style=definition]{todo}
 
+%% http://www.logic.at/staff/salzer/etc/mhyphen/
+\mathchardef\mhyphen="2D
 %% http://tex.stackexchange.com/a/5255
 %\DeclareMathOperator*{\argmax}{\arg\!\max}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -298,6 +300,14 @@ The function $g$ could then look up and output the optimal solution for all inpu
   By \autoref{lem:composition}, an MPTAS reduction from $P$ to $P'$ and another from $P'$ to $Q$ implies an MPTAS reduction from $P$ to $Q$.
   Therefore $Q$ is hard for $\FAPX$ under MPTAS reductions.
 \end{proof}
+
+According to \cite[Section~4.6]{ap06}, the original proof of the PCP Theorem from \cite{almss92} implies a $O(1)$-gap-introducing reduction from \textsc{Satisfiability} to \textsc{Maximum 3-Satisfiability}.
+Since \textsc{Satisfiability} is \NP-complete, this implies \textsc{Maximum 3-Satisfiability} is hard for $O(1)\mhyphen\APX$ under MPTAS reductions.
+A well-known $\frac{1}{2}$-approximation for \textsc{Maximum 3-Satisfiability} proves the following.
+\begin{theorem}
+  \textsc{Maximum 3-Satisfiability} is complete for \APX{} under MPTAS reductions.
+\end{theorem}
+This is not a new result: the problem is known to be complete for \APX{} under ``AP reductions'' \cite[Corollary~8.8]{acgkmp99}, and an AP reduction implies a PTAS reduction (see, for example, \cite[Figure~2]{crescenzi97}), which in turn implies an MPTAS reduction.
 
 \section*{About this work}
 
