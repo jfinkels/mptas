@@ -36,7 +36,7 @@
 This work presents a more precise proof of a theorem in \cite{ep06} that provides sufficient conditions for an optimization problem to be hard for a class of approximable optimization problems under a certain type of reduction.
 For consistency, we use definitions and notation that match and extend the definitions from that work.
 
-\section{Definitions}
+\section{Preliminaries}
 We denote the real numbers by $\mathbb{R}$ and the positive real numbers by $\mathbb{R}^+$.
 Similarly we denote the rational numbers by $\mathbb{Q}$ and the positive rational numbers by $\mathbb{Q}^+$.
 We denote the natural numbers (including 0) by $\mathbb{N}$.
@@ -50,6 +50,11 @@ We denote the set of all finite binary strings by $\Sigma^*$.
   Suppose $f$ and $g$ are functions with domain $\mathbb{N}$ and codomain $\mathbb{R}$.
   We denote by $O(g(n))$ the set of all functions $f \colon \mathbb{N} \to \mathbb{R}$ such that there exists a $k \in \mathbb{Q}^+$ and an $N \in \mathbb{N}$ such that for all $n \in \mathbb{N}$ we have $n > N$ implies $f(n) \leq k g(n)$.
 \end{definition}
+
+\begin{lemma}\label{lem:bigo}
+  Suppose $f$ and $g$ are two functions with domain $\mathbb{N}$ and codomain $\mathbb{R}$.
+  If $g(n) > 1$ for all sufficiently large $n$, then $f(n)$ is in $O(g(n)$ if and only if $f(n) - 1$ is in $O(g(n) - 1)$.
+\end{lemma}
 
 \begin{definition}
   An optimization problem is given by $(I, S, m, t)$, where $I$ is called the \emph{instance set}, $S \subseteq I \times \Sigma^*$ and is called the \emph{solution relation}, $m \colon I \times \Sigma^* \to \mathbb{N}$ and is called the \emph{measure function}, and $t\in\{\max, \min\}$ and is called the \emph{type} of the optimization.
@@ -92,6 +97,10 @@ In this notation, the class usually identified as \APX{} is written $O(1)\mhyphe
   A function $g$ is \emph{hard} for the collection of functions $\mathcal{F}$ if for all $h \in \mathcal{F}$ there is a $c \in \mathbb{R}^+$ such that $h(n) \in O(g(n^c))$.
 \end{definition}
 
+\begin{todo}
+  Modify definition to allow for minimization problems.
+\end{todo}
+
 \begin{definition}\label{def:gapintroducing}
   Suppose $L$ is a decision problem in \NP, $P$ is a maximization problem, and $\mathcal{F}$ is a downward closed collection of functions.
   There is an \emph{enhanced $\mathcal{F}$-gap-introducing reduction from $L$ to $P$} if there are functions $f \colon \left(\Sigma^* \times \mathbb{Q}^+ \right) \to I$ and $g \colon \left( \Sigma^* \times \Sigma^* \times \mathbb{Q}^+\right) \to \Sigma^+$, constants $n_0 \in \mathbb{R}^+$ and $c \in \mathbb{R}^+$, and a function $F \colon \mathbb{Q}^+ \to \mathbb{Q}^+$ such that
@@ -116,7 +125,7 @@ In this notation, the class usually identified as \APX{} is written $O(1)\mhyphe
 
 \begin{definition}\label{def:ptasreduction}
   Suppose $P$ and $Q$ are maximization problems in $\NPO$ with $P = (I_P, S_P, m_P, \max)$ and $Q = (I_Q, S_Q, m_Q, \max)$.
-  There is an \emph{MPTAS reduction} from $P$ to $Q$ if there are functions $f \colon \left(I_P \times \mathbb{Q}^+\right) \to I_Q$, $g \colon \left(I_P \times \Sigma^* \right) \to \Sigma^*$, and $c \colon (0, 1) \to (0, 1)$ such that for all $x \in I_P$ and all $\epsilon \in (0, 1)$,
+  There is a \emph{PTAS reduction} from $P$ to $Q$ if there are functions $f \colon \left(I_P \times \mathbb{Q}^+\right) \to I_Q$, $g \colon \left(I_P \times \Sigma^* \right) \to \Sigma^*$, and $c \colon (0, 1) \to (0, 1)$ such that for all $x \in I_P$ and all $\epsilon \in (0, 1)$,
   \begin{enumerate}
   \item for all $y \in S_Q(f(x, \epsilon))$, we have $g(x, y, \epsilon) \in S_P(x)$,
   \item for all $y \in S_Q(f(x, \epsilon))$, if $\rho_Q(f(x, \epsilon), y) \geq 1 - c(\epsilon)$ then $\rho_P(x, g(x, y, \epsilon)) \geq 1 - \epsilon$, and
@@ -154,11 +163,6 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
 
 \section{Results}
 
-\begin{lemma}\label{lem:bigo}
-  Suppose $f$ and $g$ are two functions with domain $\mathbb{N}$ and codomain $\mathbb{R}$.
-  If $g(n) > 1$ for all sufficiently large $n$, then $f(n)$ is in $O(g(n)$ if and only if $f(n) - 1$ is in $O(g(n) - 1)$.
-\end{lemma}
-
 \begin{todo}
   Where do we use downward closed-ness?
 \end{todo}
@@ -195,7 +199,7 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
   At this point we can construct the MPTAS reduction from $P$ to $Q$.
   Let $f(x, \epsilon) = (f_1(x, N_1), \dotsc, f_M(x, N_M))$ for all $x \in I_P$ and all $\epsilon \in (0, 1)$, where $N_i = |x|^{\max(c_i, d_i)}$ for each $i \in \{1, \dotsc, M\}$.
   Define $g$ as in \autoref{alg:g}.
-  \begin{algorithm}
+  \begin{algorithm}[t]
     \caption{Deterministic polynomial time algorithm that computes a $(1 - \epsilon)$-approximate solution for $x$ \label{alg:g}}
     \begin{algorithmic}
       \Require{$x \in I_P$, $(y_1, \dotsc, y_M) \in (S_Q(f_1(x, N_1)) \times \dotsb \times S_Q(f_M(x, N_M)))$, $\epsilon \in (0, 1)$}
@@ -218,10 +222,10 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
   Let $c(\epsilon) = \frac{\epsilon}{\epsilon + k(\epsilon - 1)}$.
 
   Condition 1 of the reduction is satisfied because $M$ is bounded above by a polynomial in $|x|$, as previously stated.
-  Condition 2 of the reduction is satisfied because $g$ outputs either $A(x)$ which is a solution in $S_P(x)$ by hypothesis, or $g_i(x, y_i, N_i)$, for some $i$, which is a witness that $x \in L_i$, or equivalently a solution in $S_P(x)$.
-  \begin{todo}
-    Explain this more, and check that the ``sufficiently large'' requirement is satisfied.
-  \end{todo}
+  Condition 2 of the reduction is satisfied because $g$ outputs either $A(x)$ or $g_i(x, y_i, N_i)$ for some $i$.
+  The output of the approximation algorithm $A$ when run on input $x$ is a solution in $S_P(x)$ by hypothesis.
+  For sufficiently long $x$, the value of $g_i(x, y_i, N_i)$ is a witness that $x \in L_i$, or equivalently, a solution in $S_P(x)$.
+  The value of $N_i$ is at least $|x|^c_i$, so $N_i$ is large enough that $g_i$ can reconstruct a witness.
   Condition 4 is satisfied because $f$ is computable in polynomial time as long as each $f_i$ is, and $g$ is computable in polynomial time as long as $A$, $m_Q$, $f_i$, $g_i$, and $F_i$ are (all other operations in $g$ can be performed in polynomial time).
   It remains to verify condition 4, the approximation preservation condition.
 
@@ -272,8 +276,9 @@ The proof of the next lemma is straightforward but tedious, so it is omitted.
   Therefore $\rho_P(x, g(x, \mathbf{y}, \epsilon)) \geq 1 - \epsilon$, completing the proof that $(f, g, c)$ is a correct MPTAS reduction from an arbitrary language $P$ in $\FAPX$ to $Q$.
 \end{proof}
 
-In the last steps of the above proof we ignore strings $x$ that were not ``sufficiently long''.
-This is acceptable because a lookup table of finite size can store the optimal solutions to all instances of optimization problem $P$ of length up to $N$, where $N$ is a constant (representing the ``sufficient length'').
+In some steps of the above proof we ignore strings $x$ that were not ``sufficiently long''.
+This is acceptable because a lookup table of finite size can store the optimal solutions to all instances of optimization problem $P$ of length up to $n_0$, where $n_0$ is a constant (representing the ``sufficient length'').
+The function $g$ could then look up and output the optimal solution for all inputs $x$ of length up to $n_0$.
 
 \begin{corollary}
   Suppose $\mathcal{F}$ is a class of downward closed functions and suppose $Q$ is an optimization problem.
